@@ -1,22 +1,23 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Line2D;
-import java.util.StringTokenizer;
 
 public class javaFractalTree extends JFrame {
+
+    private int angleStep = 46;
 
     public static void main(String[] args) {
         javaFractalTree treeMain = new javaFractalTree();
     }
 
-    public javaFractalTree(){
+    public javaFractalTree() {
         setupComponents();
     }
 
-    public void setupComponents(){
-        this.setSize(800,600);
+    public void setupComponents() {
+        this.setSize(800, 600);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
 
         JLabel titleLabel = new JLabel("Fractal Tree");
         titleLabel.setForeground(Color.white);
@@ -24,23 +25,54 @@ public class javaFractalTree extends JFrame {
         titlePanel.setBackground(Color.black);
 
         titlePanel.add(titleLabel, BorderLayout.CENTER);
-        
+
         this.getContentPane().setBackground(Color.black);
-        this.add(new DrawingTool(), BorderLayout.CENTER);
         this.add(titlePanel, BorderLayout.NORTH);
         this.setVisible(true);
     }
 
-    private class DrawingTool extends JComponent{
-        public void paint(Graphics g){
-            Graphics2D graphics = (Graphics2D) g;
-            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+    @Override
+    public void paint(Graphics g) {
+        super.paintComponents(g);
+        startDrawing(g, this.getWidth(), this.getHeight());
+    }
 
-            Shape line = new Line2D.Double(400,600,400,350);
-            graphics.setColor(Color.GREEN);
-            graphics.setStroke(new BasicStroke(7));
-            graphics.draw(line);
+    private void startDrawing(Graphics g, int width, int height) {
+        Point init = new Point(width/2 ,height);
+        g.setColor(Color.WHITE);
+        drawTree(g, init, -90,16, 12);
+    }
+
+    private void drawTree(Graphics g, Point p, double angle, double length, int times) {
+        if (times == 0){
+            return;
         }
+        double nextLength = length*.67;
+
+        //left branch
+        Point nextPointL = getNextPoint(p, angle, length);
+        drawBranch(g, p, nextPointL, length);
+        drawTree(g, nextPointL, angle - angleStep, nextLength, times-1);
+
+        //right branch
+        Point nextPointR = getNextPoint(p, angle, length);
+        drawBranch(g, p, nextPointR, length);
+        drawTree(g, nextPointR, angle + angleStep, nextLength, times-1);
+    }
+
+    private Point getNextPoint(Point p, double angle, double length){
+        Point nextPoint;
+        double x1 = p.getX(), y1 = p.getY();
+        double x2 = x1 + Math.cos(Math.toRadians(angle)) * length * 10;
+        double y2 = y1 + Math.sin(Math.toRadians(angle)) * length * 10;
+        nextPoint = new Point((int) (x2), (int) (y2));
+
+        return nextPoint;
+    }
+
+    private void drawBranch(Graphics g, Point p, Point p2, double length){
+        int x1 = (int) p.getX(), y1 = (int) p.getY(), x2 = (int) p2.getX(), y2 = (int) p2.getY();
+        g.drawLine(x1, y1, x2, y2);
     }
 }
 
