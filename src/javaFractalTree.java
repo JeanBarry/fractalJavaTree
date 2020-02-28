@@ -34,6 +34,7 @@ public class javaFractalTree extends JFrame {
     @Override
     public void paint(Graphics g) {
         super.paintComponents(g);
+        ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         startDrawing(g, this.getWidth(), this.getHeight());
     }
 
